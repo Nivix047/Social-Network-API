@@ -1,3 +1,5 @@
-const { Reaction, model } = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 const Reaction = model("reaction", reactionSchema);
+
+module.exports = Reaction;
