@@ -13,7 +13,7 @@ const reactionSchema = new Schema({
     maxlength: 280,
   },
   username: {
-    type: Sting,
+    type: String,
     required: true,
   },
   createdAt: {
