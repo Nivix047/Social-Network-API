@@ -5,8 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index",
-    "dev": "nodemon index"
+    "start": "nodemon server",
+    "dev": "nodemon server"
   },
   "dependencies": {
     "express": "^4.18.2",
