@@ -36,7 +36,7 @@ module.exports = {
     User.findOneAndDelete({ _id: req.params.userId })
       .then((userData) => {
         if (!userData) {
-          return res.status(404).json({ message: "No user with that ID" });
+          return res.status(404).json({ message: "No user with that ID!" });
         }
         res.json(userData);
       })
@@ -52,13 +52,14 @@ module.exports = {
     )
       .then((userData) => {
         if (!userData) {
-          return res.status(404).json({ message: "No user with that ID" });
+          return res.status(404).json({ message: "No user with that ID!" });
         }
         res.json(userData);
       })
       .catch((err) => res.status(500).json(err));
   },
 
+  // Add friend
   addFriend(req, res) {
     User.findByIdAndUpdate(
       { _id: req.params.userId },
@@ -74,6 +75,7 @@ module.exports = {
       .catch((err) => res.status(500).json(err));
   },
 
+  // Delete friend
   removeFriend(req, res) {
     User.findByIdAndUpdate(
       { _id: req.params.userId },
