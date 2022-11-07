@@ -1,60 +1,44 @@
-const { ObjectId } = require("mongoose").Types;
-const { MongoCursorInUseError } = require("mongodb");
-const { User, Thought, Reaction } = require("../models");
-
-// aggregate function to get the number of users overall
-const userCount = async () =>
-  User.aggregate()
-    .count("userCount")
-    .then((numberOfUsers) => numberOfUsers);
+const { User, Thought } = require("../models");
 
 module.exports = {
   // Get all users
   getUsers(req, res) {
     User.find()
-      .then(async (users) => {
-        const userObj = {
-          users,
-          userCount: await userCount(),
-        };
-        return res.json(userObj);
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(500).json(err);
-      });
+      .populate("thoughts")
+      .select("-__v")
+      .then((userData) => res.json(userData))
+      .catch((err) => res.status(500).json(err));
   },
 
   // Get a single user
   getSingleUser(req, res) {
     User.findOne({ _id: req.params.userId })
-      .then(async (user) =>
-        !user
-          ? res.status(404).json({ message: "No student with taht ID" })
-          : res.json({
-              user,
-            })
-      )
-      .catch((err) => {
-        console.log(err);
-        return res.status(500).json(err);
-      });
+      .select("-__v")
+      .populate("friends")
+      .populate("thoughts")
+      .then((userData) => {
+        if (!userData) {
+          return res.status(404).json({ message: "No user with this ID!" });
+        }
+        res.json(userData);
+      })
+      .catch((err) => res.status(500).json(err));
   },
 
   // Create a new user
   createUser(req, res) {
     User.create(req.body)
-      .then((user) => res.json(user))
+      .then((userData) => res.json(userData))
       .catch((err) => res.status(500).json(err));
   },
 
   // Delete a user
   deleteUser(req, res) {
     User.findOneAndDelete({ _id: req.params.userId })
-      .then((user) => {
-        !user
+      .then((userData) => {
+        !userData
           ? res.status(404).json({ message: "No user with that ID" })
-          : res.json(user);
+          : res.json(userData);
       })
       .catch((err) => res.status(500).json(err));
   },
@@ -65,10 +49,10 @@ module.exports = {
       { _id: req.params.userId },
       { $set: req.body },
       { runValidators: true, new: true }
-    ).then((user) =>
-      !course
+    ).then((userData) =>
+      !userData
         ? res.status(404).json({ message: "No user with this ID" })
-        : res.json(user)
+        : res.json(userData)
     );
   },
 };
